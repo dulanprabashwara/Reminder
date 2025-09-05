@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 
-export default function Index() {
+export default function Homescreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>dulans </Text>
+      <Text style={styles.text}>Welcome to the homepage!</Text>
     </View>
   );
 }
@@ -11,12 +11,11 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#2acbd3",
+    flexDirection: "column",
+    backgroundColor: "#fff",
   },
-  text: {
-    fontSize: 24,
-    fontWeight: "600",
-  },
+  text: { fontSize: 24, fontWeight: "600" },
 });
