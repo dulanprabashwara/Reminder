@@ -1,11 +1,13 @@
 import { Stack } from "expo-router";
 import { StyleSheet, View } from "react-native";
+import NotificationListener from "./components/NotificationListener";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 export default function RootLayout() {
   return (
     <ThemeProvider>
       <View style={styles.container}>
+        <NotificationListener />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(drawer)" />
           <Stack.Screen name="privacy-policy" />

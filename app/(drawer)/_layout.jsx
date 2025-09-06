@@ -3,17 +3,11 @@ import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 function CustomDrawerContent(props) {
   const { theme, isDark, toggleTheme } = useTheme();
   const router = useRouter();
-
-  const handleLogout = () => {
-    // Add your logout logic here
-    console.log("Logout pressed");
-    // For example: clear user data, navigate to login screen
-  };
 
   const navigateToScreen = (screenName) => {
     props.navigation.closeDrawer();
@@ -22,43 +16,27 @@ function CustomDrawerContent(props) {
 
   return (
     <View style={[styles.drawerContent, { backgroundColor: theme.surface }]}>
-      {/* Profile Header */}
-      <View
-        style={[
-          styles.drawerHeader,
-          {
-            backgroundColor: theme.background,
-            borderBottomColor: theme.border,
-          },
-        ]}
-      >
-        <Ionicons name="person-circle" size={60} color={theme.text} />
-        <Text style={[styles.drawerHeaderText, { color: theme.text }]}>
-          Welcome User
-        </Text>
-      </View>
-
-      {/* Navigation Items */}
-      <View style={styles.drawerItems}>
-        {/* Theme Toggle */}
-        <View style={[styles.drawerItem, styles.themeToggle]}>
-          <View style={styles.themeToggleLeft}>
-            <Ionicons
-              name={isDark ? "moon" : "sunny"}
-              size={24}
-              color={theme.text}
-            />
-            <Text style={[styles.drawerItemText, { color: theme.text }]}>
-              {isDark ? "Dark Mode" : "Light Mode"}
-            </Text>
-          </View>
+      {/* Theme Toggle in Top Right Corner */}
+      <View style={styles.themeToggleContainer}>
+        <View style={[styles.themeToggleCorner]}>
+          <Ionicons
+            name={isDark ? "moon" : "sunny"}
+            size={20}
+            color={theme.text}
+            style={styles.themeIcon}
+          />
           <Switch
             value={isDark}
             onValueChange={toggleTheme}
             trackColor={{ false: "#767577", true: "#81b0ff" }}
             thumbColor={isDark ? "#f5dd4b" : "#f4f3f4"}
+            style={styles.themeSwitch}
           />
         </View>
+      </View>
+
+      {/* Navigation Items */}
+      <View style={styles.drawerItems}>
         {/* Create Reminder Button */}
         <TouchableOpacity
           style={styles.drawerItem}
@@ -99,17 +77,6 @@ function CustomDrawerContent(props) {
             About Us
           </Text>
         </TouchableOpacity>
-
-        {/* Logout Button */}
-        <TouchableOpacity
-          style={[styles.drawerItem, styles.logoutButton]}
-          onPress={handleLogout}
-        >
-          <Ionicons name="log-out-outline" size={24} color="#ff4444" />
-          <Text style={[styles.drawerItemText, { color: "#ff4444" }]}>
-            Logout
-          </Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -140,28 +107,33 @@ function DrawerLayoutContent() {
 }
 
 export default function DrawerLayout() {
-  return (
-    <DrawerLayoutContent />
-  );
+  return <DrawerLayoutContent />;
 }
 
 const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
-  drawerHeader: {
-    padding: 30,
-    alignItems: "center",
-    borderBottomWidth: 1,
+  themeToggleContainer: {
+    paddingTop: 50,
+    paddingRight: 20,
+    alignItems: "flex-end",
   },
-  drawerHeaderText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginTop: 10,
+  themeToggleCorner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  themeIcon: {
+    marginRight: 5,
+  },
+  themeSwitch: {
+    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
   },
   drawerItems: {
     flex: 1,
     padding: 20,
+    paddingTop: 10,
   },
   drawerItem: {
     flexDirection: "row",
@@ -175,19 +147,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 15,
     fontWeight: "500",
-  },
-  themeToggle: {
-    justifyContent: "space-between",
-  },
-  themeToggleLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  logoutButton: {
-    marginTop: "auto",
-    marginBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    paddingTop: 20,
   },
 });
