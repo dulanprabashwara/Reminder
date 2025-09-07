@@ -3,9 +3,11 @@ import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { useTheme } from "../contexts/ThemeContext";
 
 function CustomDrawerContent(props) {
   const router = useRouter();
+  const { theme, isDark, toggleTheme } = useTheme();
 
   const navigateToScreen = (screenName) => {
     props.navigation.closeDrawer();
@@ -13,15 +15,25 @@ function CustomDrawerContent(props) {
   };
 
   return (
-    <View style={[styles.drawerContent, { backgroundColor: "#2C2C2C" }]}>
+    <View style={[styles.drawerContent, { backgroundColor: theme.background }]}>
       {/* Orange Header */}
       <View style={styles.drawerHeader}>
         <View style={styles.headerContent}>
-          <Ionicons name="alarm" size={40} color="white" />
+          <View style={styles.iconContainer}>
+            <Ionicons name="alarm" size={42} color="white" />
+          </View>
           <View style={styles.appNameContainer}>
             <Text style={styles.appTitle}>Daily</Text>
             <Text style={styles.appSubtitle}>Reminder</Text>
           </View>
+          {/* Theme Toggle Button */}
+          <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
+            <Ionicons
+              name={isDark ? "sunny" : "moon"}
+              size={24}
+              color="white"
+            />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -29,42 +41,54 @@ function CustomDrawerContent(props) {
       <View style={styles.drawerItems}>
         {/* Create Reminder Button */}
         <TouchableOpacity
-          style={styles.drawerItem}
+          style={[styles.drawerItem, { backgroundColor: theme.surface }]}
           onPress={() => navigateToScreen("/create-reminder")}
         >
-          <Ionicons name="add-circle-outline" size={24} color="#FFFFFF" />
-          <Text style={styles.drawerItemText}>Create Reminder</Text>
+          <Ionicons name="add-circle-outline" size={24} color={theme.text} />
+          <Text style={[styles.drawerItemText, { color: theme.text }]}>
+            Create Reminder
+          </Text>
         </TouchableOpacity>
 
         {/* Privacy Policy Button */}
         <TouchableOpacity
-          style={styles.drawerItem}
+          style={[styles.drawerItem, { backgroundColor: theme.surface }]}
           onPress={() => navigateToScreen("/privacy-policy")}
         >
-          <Ionicons name="shield-checkmark-outline" size={24} color="#FFFFFF" />
-          <Text style={styles.drawerItemText}>Privacy Policy</Text>
+          <Ionicons
+            name="shield-checkmark-outline"
+            size={24}
+            color={theme.text}
+          />
+          <Text style={[styles.drawerItemText, { color: theme.text }]}>
+            Privacy Policy
+          </Text>
         </TouchableOpacity>
 
         {/* About Us Button */}
         <TouchableOpacity
-          style={styles.drawerItem}
+          style={[styles.drawerItem, { backgroundColor: theme.surface }]}
           onPress={() => navigateToScreen("/about-us")}
         >
           <Ionicons
             name="information-circle-outline"
             size={24}
-            color="#FFFFFF"
+            color={theme.text}
           />
-          <Text style={styles.drawerItemText}>About Us</Text>
+          <Text style={[styles.drawerItemText, { color: theme.text }]}>
+            About Us
+          </Text>
         </TouchableOpacity>
 
         {/* Settings Button */}
         <TouchableOpacity
-          style={styles.drawerItem}
+          style={[styles.drawerItem, { backgroundColor: theme.surface }]}
           onPress={() => navigateToScreen("/profile")}
         >
-          <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
-          <Text style={styles.drawerItemText}>Settings</Text>
+          <Ionicons name="settings-outline" size={24} color={theme.text} />
+          <Text style={[styles.drawerItemText, { color: theme.text }]}>
+            Settings
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -105,36 +129,62 @@ const styles = StyleSheet.create({
   },
   drawerHeader: {
     backgroundColor: "#FF9800",
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 55,
+    paddingBottom: 25,
     paddingHorizontal: 20,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   headerContent: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
+    minHeight: 60,
+  },
+  iconContainer: {
+    padding: 4,
+    marginRight: 4,
   },
   appNameContainer: {
     marginLeft: 16,
+    flex: 1,
+    alignItems: "center",
   },
   appTitle: {
     fontSize: 24,
     fontWeight: "700",
     color: "white",
-    letterSpacing: 1,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    letterSpacing: 1.5,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    lineHeight: 28,
   },
   appSubtitle: {
-    fontSize: 16,
-    fontWeight: "400",
+    fontSize: 24,
+    fontWeight: "700",
     color: "white",
-    letterSpacing: 2,
+    letterSpacing: 1.5,
     marginTop: -2,
-    opacity: 0.9,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowColor: "rgba(0, 0, 0, 0.5)",
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
+    lineHeight: 28,
+  },
+  themeToggle: {
+    padding: 10,
+    borderRadius: 25,
+    backgroundColor: "rgba(255, 255, 255, 0.15)",
+    borderWidth: 1,
+    borderColor: "rgba(255, 255, 255, 0.3)",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
+    elevation: 3,
   },
   drawerItems: {
     flex: 1,

@@ -8,6 +8,7 @@ import {
   SectionList,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -19,12 +20,16 @@ import {
   getReminders,
 } from "../utils/storage";
 
-export default function Homescreen() {
+export default function Home() {
   const { theme } = useTheme();
+  const styles = getStyles(theme);
   const router = useRouter();
   const navigation = useNavigation();
   const [reminders, setReminders] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filteredReminders, setFilteredReminders] = useState([]);
 
   const handleMenuPress = () => {
     navigation.dispatch(DrawerActions.openDrawer());
@@ -40,8 +45,26 @@ export default function Homescreen() {
   };
 
   const handleSearch = () => {
-    // TODO: Implement search functionality
-    Alert.alert("Search", "Search functionality coming soon!");
+    setIsSearching(!isSearching);
+    if (isSearching) {
+      // If closing search, clear the search query
+      setSearchQuery("");
+      setFilteredReminders([]);
+    }
+  };
+
+  const handleSearchQueryChange = (query) => {
+    setSearchQuery(query);
+    if (query.trim() === "") {
+      setFilteredReminders([]);
+      return;
+    }
+
+    // Filter reminders by title (case insensitive)
+    const filtered = reminders.filter((reminder) =>
+      reminder.title.toLowerCase().includes(query.toLowerCase())
+    );
+    setFilteredReminders(filtered);
   };
 
   const loadReminders = async () => {
@@ -122,12 +145,29 @@ export default function Homescreen() {
   };
 
   const categorizeReminders = () => {
+    // Use filtered reminders when searching, otherwise use all reminders
+    const remindersToShow =
+      isSearching && searchQuery.trim() !== "" ? filteredReminders : reminders;
+
+    // If searching, return simple format without categorization
+    if (isSearching && searchQuery.trim() !== "") {
+      if (filteredReminders.length === 0) {
+        return [{ title: "Search Results", data: [] }];
+      }
+      return [
+        {
+          title: `Search Results (${filteredReminders.length})`,
+          data: filteredReminders,
+        },
+      ];
+    }
+
     const now = new Date();
     const today = [];
     const upcoming = [];
     const previous = [];
 
-    reminders.forEach((reminder) => {
+    remindersToShow.forEach((reminder) => {
       const reminderDate = new Date(reminder.dateTime);
 
       if (isToday(reminder.dateTime)) {
@@ -197,17 +237,24 @@ export default function Homescreen() {
     };
 
     return (
-      <TouchableOpacity
-        style={styles.reminderCard}
-        onPress={() => handleEditReminder(item)}
-      >
-        <View style={styles.cardContent}>
+      <View style={styles.reminderCard}>
+        <TouchableOpacity
+          style={styles.cardContent}
+          onPress={() => handleEditReminder(item)}
+          activeOpacity={0.7}
+        >
           <View style={styles.leftSection}>
-            <Ionicons name="notifications" size={20} color="#FF9800" />
+            <Ionicons name="notifications" size={18} color="#FF9800" />
             <View style={styles.reminderInfo}>
-              <Text style={styles.reminderTitle}>{item.title}</Text>
+              <Text
+                style={styles.reminderTitle}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                {item.title}
+              </Text>
               <View style={styles.dateTimeContainer}>
-                <Ionicons name="calendar" size={14} color="#FF9800" />
+                <Ionicons name="calendar" size={12} color="#FF9800" />
                 <Text style={styles.dateText}>
                   {new Date(item.dateTime).toLocaleDateString("en-US", {
                     weekday: "short",
@@ -218,7 +265,7 @@ export default function Homescreen() {
                 </Text>
                 <Ionicons
                   name="time"
-                  size={14}
+                  size={12}
                   color="#FF9800"
                   style={styles.timeIcon}
                 />
@@ -230,7 +277,11 @@ export default function Homescreen() {
                 </Text>
               </View>
               {item.description && (
-                <Text style={styles.reminderDescription}>
+                <Text
+                  style={styles.reminderDescription}
+                  numberOfLines={2}
+                  ellipsizeMode="tail"
+                >
                   {item.description}
                 </Text>
               )}
@@ -244,32 +295,42 @@ export default function Homescreen() {
                 { backgroundColor: getColorIndicator(sectionType) },
               ]}
             />
-            <TouchableOpacity
-              style={styles.deleteButton}
-              onPress={() => handleDelete(item.id)}
-            >
-              <Ionicons name="trash-outline" size={16} color="#FF5722" />
-            </TouchableOpacity>
           </View>
-        </View>
-      </TouchableOpacity>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(item.id)}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons name="trash-outline" size={16} color="#FF5722" />
+        </TouchableOpacity>
+      </View>
     );
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: "#2C2C2C" }]}>
+    <View
+      style={[
+        getStyles(theme).container,
+        { backgroundColor: theme.background },
+      ]}
+    >
       {/* Custom Orange Header */}
-      <View style={styles.orangeHeader}>
+      <View style={getStyles(theme).orangeHeader}>
         <TouchableOpacity onPress={handleMenuPress}>
           <Ionicons name="menu" size={24} color="white" />
         </TouchableOpacity>
         <View style={styles.titleContainer}>
-          <Text style={styles.headerTitle}>Daily</Text>
-          <Text style={styles.headerSubtitle}>Reminder</Text>
+          <Text style={styles.headerTitle}>Daily Reminder</Text>
         </View>
         <View style={styles.headerRightIcons}>
           <TouchableOpacity style={styles.headerIcon} onPress={handleSearch}>
-            <Ionicons name="search" size={24} color="white" />
+            <Ionicons
+              name={isSearching ? "close" : "search"}
+              size={24}
+              color="white"
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.headerIcon}
@@ -286,8 +347,41 @@ export default function Homescreen() {
         </View>
       </View>
 
+      {/* Search Input */}
+      {isSearching && (
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInputContainer}>
+            <Ionicons
+              name="search"
+              size={20}
+              color="#FF9800"
+              style={styles.searchIcon}
+            />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search reminders by title..."
+              placeholderTextColor="#CCCCCC"
+              value={searchQuery}
+              onChangeText={handleSearchQueryChange}
+              autoFocus={true}
+            />
+            {searchQuery.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  setSearchQuery("");
+                  setFilteredReminders([]);
+                }}
+                style={styles.clearButton}
+              >
+                <Ionicons name="close-circle" size={20} color="#CCCCCC" />
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
+
       <View style={styles.content}>
-        {reminders.length === 0 ? (
+        {reminders.length === 0 && !isSearching ? (
           <View style={styles.emptyState}>
             <Ionicons name="alarm-outline" size={80} color="#888" />
             <Text style={styles.emptyText}>No reminders yet</Text>
@@ -295,8 +389,19 @@ export default function Homescreen() {
               Create your first reminder to get started
             </Text>
           </View>
+        ) : isSearching &&
+          searchQuery.trim() !== "" &&
+          filteredReminders.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="search-outline" size={80} color="#888" />
+            <Text style={styles.emptyText}>No results found</Text>
+            <Text style={styles.emptySubText}>
+              Try searching with different keywords
+            </Text>
+          </View>
         ) : (
           <SectionList
+            style={{ flex: 1 }}
             sections={categorizeReminders()}
             renderItem={renderReminder}
             renderSectionHeader={renderSectionHeader}
@@ -305,7 +410,12 @@ export default function Homescreen() {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             contentContainerStyle={styles.listContainer}
-            showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={true}
+            scrollEventThrottle={16}
+            removeClippedSubviews={true}
+            initialNumToRender={10}
+            maxToRenderPerBatch={5}
+            windowSize={10}
           />
         )}
       </View>
@@ -318,172 +428,236 @@ export default function Homescreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  orangeHeader: {
-    backgroundColor: "#FF9800",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50, // Account for status bar
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 1,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 2,
-    marginTop: -2,
-    opacity: 0.9,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerRightIcons: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  headerIcon: {
-    marginLeft: 16,
-  },
-  content: {
-    flex: 1,
-  },
-  emptyState: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 40,
-  },
-  emptyText: {
-    fontSize: 24,
-    fontWeight: "600",
-    marginTop: 20,
-    textAlign: "center",
-    color: "#FFFFFF",
-  },
-  emptySubText: {
-    fontSize: 16,
-    marginTop: 8,
-    textAlign: "center",
-    color: "#CCCCCC",
-  },
-  listContainer: {
-    padding: 16,
-  },
-  sectionHeader: {
-    paddingVertical: 12,
-    paddingHorizontal: 4,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 8,
-  },
-  reminderCard: {
-    backgroundColor: "#3C3C3C",
-    borderRadius: 12,
-    marginBottom: 12,
-    padding: 16,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  cardContent: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  leftSection: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  reminderInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  reminderTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#FFFFFF",
-    marginBottom: 8,
-  },
-  dateTimeContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
-    marginBottom: 4,
-  },
-  dateText: {
-    fontSize: 14,
-    color: "#FF9800",
-    marginLeft: 6,
-    marginRight: 16,
-  },
-  timeIcon: {
-    marginLeft: 8,
-  },
-  timeText: {
-    fontSize: 14,
-    color: "#FF9800",
-    marginLeft: 6,
-  },
-  reminderDescription: {
-    fontSize: 14,
-    color: "#CCCCCC",
-    marginTop: 4,
-  },
-  rightSection: {
-    alignItems: "center",
-    justifyContent: "space-between",
-    height: "100%",
-    minHeight: 60,
-  },
-  colorIndicator: {
-    width: 4,
-    height: 40,
-    borderRadius: 2,
-  },
-  deleteButton: {
-    padding: 8,
-    marginTop: 8,
-  },
-  fab: {
-    position: "absolute",
-    bottom: 30,
-    right: 30,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#FF9800",
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 6,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-  },
-});
+const getStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    orangeHeader: {
+      backgroundColor: "#FF9800",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      paddingTop: 50, // Account for status bar
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 1,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    headerSubtitle: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 2,
+      marginTop: -2,
+      opacity: 0.9,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    headerRightIcons: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    headerIcon: {
+      marginLeft: 16,
+    },
+    content: {
+      flex: 1,
+    },
+    emptyState: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      paddingHorizontal: 40,
+    },
+    emptyText: {
+      fontSize: 24,
+      fontWeight: "600",
+      marginTop: 20,
+      textAlign: "center",
+      color: theme.text,
+    },
+    emptySubText: {
+      fontSize: 16,
+      marginTop: 8,
+      textAlign: "center",
+      color: theme.textSecondary,
+    },
+    listContainer: {
+      paddingVertical: 8,
+      paddingBottom: 100, // Extra padding for FAB
+    },
+    sectionHeader: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      backgroundColor: theme.background,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: "600",
+      color: theme.text,
+      marginBottom: 8,
+    },
+    reminderCard: {
+      backgroundColor: theme.surface,
+      borderRadius: 8,
+      marginHorizontal: 16,
+      marginVertical: 4,
+      padding: 12,
+      elevation: 2,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+    },
+    cardContent: {
+      flexDirection: "row",
+      alignItems: "flex-start",
+    },
+    leftSection: {
+      flex: 1,
+      flexDirection: "row",
+      alignItems: "flex-start",
+    },
+    reminderInfo: {
+      flex: 1,
+      marginLeft: 8,
+    },
+    reminderTitle: {
+      fontSize: 15,
+      fontWeight: "600",
+      color: theme.text,
+      marginBottom: 4,
+    },
+    dateTimeContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      flexWrap: "wrap",
+      marginBottom: 2,
+    },
+    dateText: {
+      fontSize: 12,
+      color: "#FF9800",
+      marginLeft: 4,
+      marginRight: 12,
+    },
+    timeIcon: {
+      marginLeft: 4,
+    },
+    timeText: {
+      fontSize: 12,
+      color: "#FF9800",
+      marginLeft: 4,
+    },
+    reminderDescription: {
+      fontSize: 12,
+      color: theme.textSecondary,
+      marginTop: 2,
+      numberOfLines: 2,
+    },
+    rightSection: {
+      alignItems: "center",
+      justifyContent: "center",
+      minHeight: 40,
+    },
+    colorIndicator: {
+      width: 4,
+      height: 30,
+      borderRadius: 2,
+    },
+    deleteButton: {
+      position: "absolute",
+      top: 8,
+      right: 8,
+      padding: 4,
+      borderRadius: 12,
+      backgroundColor: "rgba(255, 87, 34, 0.1)",
+    },
+    fab: {
+      position: "absolute",
+      bottom: 30,
+      right: 30,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: "#FF9800",
+      justifyContent: "center",
+      alignItems: "center",
+      elevation: 6,
+      shadowColor: theme.shadow,
+      shadowOffset: { width: 0, height: 3 },
+      shadowOpacity: 0.3,
+      shadowRadius: 6,
+    },
+    searchContainer: {
+      backgroundColor: theme.background,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    searchInputContainer: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: theme.surface,
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    searchIcon: {
+      marginRight: 8,
+    },
+    searchInput: {
+      flex: 1,
+      fontSize: 16,
+      color: theme.text,
+      paddingVertical: 8,
+    },
+    clearButton: {
+      marginLeft: 8,
+      padding: 4,
+    },
+    sectionHeader: {
+      paddingVertical: 12,
+      paddingHorizontal: 4,
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 1,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    headerRightIcons: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    headerIcon: {
+      marginLeft: 16,
+    },
+  });

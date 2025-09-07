@@ -10,6 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "./contexts/ThemeContext";
 import { getReminders, saveSnoozeTime } from "./utils/storage";
 
 // Web storage fallback
@@ -32,6 +33,8 @@ const storage = Platform.OS === "web" ? webStorage : AsyncStorage;
 const SNOOZE_DURATION_KEY = "default_snooze_duration";
 
 export default function ProfileScreen() {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const router = useRouter();
   const [taskStats, setTaskStats] = useState({
     completed: 0,
@@ -387,7 +390,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: "#2C2C2C" }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Custom Orange Header */}
       <View style={styles.orangeHeader}>
         <TouchableOpacity
@@ -398,7 +401,6 @@ export default function ProfileScreen() {
         </TouchableOpacity>
         <View style={styles.titleContainer}>
           <Text style={styles.headerTitle}>Settings</Text>
-          <Text style={styles.headerSubtitle}>& Preferences</Text>
         </View>
         <View style={styles.settingsIconContainer}>
           <Ionicons name="settings" size={24} color="white" />
@@ -547,299 +549,288 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  orangeHeader: {
-    backgroundColor: "#FF9800",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50, // Account for status bar
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 1,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 2,
-    marginTop: -2,
-    opacity: 0.9,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  content: {
-    flex: 1,
-  },
-  profileContainer: {
-    padding: 20,
-  },
-  profileHeader: {
-    alignItems: "center",
-    marginBottom: 30,
-  },
-  profileAvatar: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-    backgroundColor: "#FF9800",
-  },
-  profileName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-  statsSection: {
-    marginBottom: 30,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 15,
-    color: "#FFFFFF",
-  },
-  settingDescription: {
-    fontSize: 14,
-    marginBottom: 15,
-    lineHeight: 20,
-    color: "#CCCCCC",
-  },
-  statsGrid: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 10,
-  },
-  statsCard: {
-    flex: 1,
-    padding: 15,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "center",
-    backgroundColor: "#3C3C3C",
-    borderColor: "#555555",
-  },
-  statsIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  statsInfo: {
-    alignItems: "center",
-  },
-  statsCount: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 4,
-    color: "#FFFFFF",
-  },
-  statsTitle: {
-    fontSize: 12,
-    textAlign: "center",
-    color: "#CCCCCC",
-  },
-  settingsSection: {
-    marginBottom: 30,
-  },
-  sliderContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
-  },
-  sliderLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: 280,
-    marginBottom: 20,
-  },
-  sliderLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    color: "#CCCCCC",
-  },
-  sliderValue: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FFFFFF",
-  },
-  sliderWrapper: {
-    width: 280,
-    height: 40,
-    justifyContent: "center",
-    position: "relative",
-  },
-  sliderTrack: {
-    height: 40,
-    justifyContent: "center",
-    paddingVertical: 16,
-  },
-  sliderTrackBackground: {
-    borderRadius: 4,
-    position: "absolute",
-    top: 16,
-  },
-  sliderTrackActive: {
-    borderRadius: 4,
-    position: "absolute",
-    top: 16,
-  },
-  sliderKnob: {
-    borderRadius: 12,
-    position: "absolute",
-    top: 8,
-    elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    borderWidth: 2,
-    borderColor: "white",
-  },
-  backButton: {
-    padding: 4,
-  },
-  settingsIconContainer: {
-    width: 24,
-    height: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  settingRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#555555",
-  },
-  settingInfo: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1,
-  },
-  settingTitle: {
-    fontSize: 16,
-    fontWeight: "500",
-    color: "#FFFFFF",
-    marginLeft: 12,
-  },
-  subSettingTitle: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#CCCCCC",
-    marginBottom: 10,
-    marginTop: 15,
-  },
-  toggleButton: {
-    width: 50,
-    height: 30,
-    borderRadius: 15,
-    backgroundColor: "#555555",
-    justifyContent: "center",
-    paddingHorizontal: 2,
-  },
-  toggleButtonActive: {
-    backgroundColor: "#FF9800",
-  },
-  toggleCircle: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
-    backgroundColor: "#FFFFFF",
-    alignSelf: "flex-start",
-  },
-  toggleCircleActive: {
-    alignSelf: "flex-end",
-  },
-  volumeSection: {
-    marginLeft: 32,
-    marginTop: 10,
-  },
-  volumeSliderContainer: {
-    marginTop: 10,
-  },
-  volumeLabels: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  volumeLabel: {
-    fontSize: 12,
-    color: "#CCCCCC",
-  },
-  volumeValue: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#FF9800",
-  },
-  volumeControls: {
-    flexDirection: "row",
-    justifyContent: "center",
-    gap: 20,
-    marginTop: 10,
-  },
-  volumeButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "#3C3C3C",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FF9800",
-  },
-  vibrationSection: {
-    marginLeft: 32,
-    marginTop: 10,
-  },
-  patternButtons: {
-    flexDirection: "row",
-    gap: 10,
-    marginTop: 10,
-  },
-  patternButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-    backgroundColor: "#3C3C3C",
-    borderWidth: 1,
-    borderColor: "#555555",
-  },
-  patternButtonActive: {
-    backgroundColor: "#FF9800",
-    borderColor: "#FF9800",
-  },
-  patternButtonText: {
-    fontSize: 14,
-    color: "#CCCCCC",
-    fontWeight: "500",
-  },
-  patternButtonTextActive: {
-    color: "#FFFFFF",
-  },
-});
+const getStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    orangeHeader: {
+      backgroundColor: "#FF9800",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      paddingTop: 50, // Account for status bar
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 1,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    content: {
+      flex: 1,
+    },
+    profileContainer: {
+      padding: 20,
+    },
+    profileHeader: {
+      alignItems: "center",
+      marginBottom: 30,
+    },
+    profileAvatar: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 15,
+      backgroundColor: "#FF9800",
+    },
+    profileName: {
+      fontSize: 24,
+      fontWeight: "bold",
+      color: "#FFFFFF",
+    },
+    statsSection: {
+      marginBottom: 30,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: "bold",
+      marginBottom: 15,
+      color: theme.text,
+    },
+    settingDescription: {
+      fontSize: 14,
+      marginBottom: 15,
+      lineHeight: 20,
+      color: theme.textSecondary,
+    },
+    statsGrid: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      gap: 10,
+    },
+    statsCard: {
+      flex: 1,
+      padding: 15,
+      borderRadius: 12,
+      borderWidth: 1,
+      alignItems: "center",
+      backgroundColor: theme.surface,
+      borderColor: theme.border,
+    },
+    statsIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      justifyContent: "center",
+      alignItems: "center",
+      marginBottom: 8,
+    },
+    statsInfo: {
+      alignItems: "center",
+    },
+    statsCount: {
+      fontSize: 24,
+      fontWeight: "bold",
+      marginBottom: 4,
+      color: theme.text,
+    },
+    statsTitle: {
+      fontSize: 12,
+      textAlign: "center",
+      color: theme.textSecondary,
+    },
+    settingsSection: {
+      marginBottom: 30,
+    },
+    sliderContainer: {
+      paddingVertical: 20,
+      alignItems: "center",
+    },
+    sliderLabels: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      width: 280,
+      marginBottom: 20,
+    },
+    sliderLabel: {
+      fontSize: 12,
+      fontWeight: "500",
+      color: theme.textSecondary,
+    },
+    sliderValue: {
+      fontSize: 16,
+      fontWeight: "bold",
+      color: theme.text,
+    },
+    sliderWrapper: {
+      width: 280,
+      height: 40,
+      justifyContent: "center",
+      position: "relative",
+    },
+    sliderTrack: {
+      height: 40,
+      justifyContent: "center",
+      paddingVertical: 16,
+    },
+    sliderTrackBackground: {
+      borderRadius: 4,
+      position: "absolute",
+      top: 16,
+    },
+    sliderTrackActive: {
+      borderRadius: 4,
+      position: "absolute",
+      top: 16,
+    },
+    sliderKnob: {
+      borderRadius: 12,
+      position: "absolute",
+      top: 8,
+      elevation: 3,
+      shadowColor: "#000",
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      borderWidth: 2,
+      borderColor: "white",
+    },
+    backButton: {
+      padding: 4,
+    },
+    settingsIconContainer: {
+      width: 24,
+      height: 24,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    settingRow: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+    },
+    settingInfo: {
+      flexDirection: "row",
+      alignItems: "center",
+      flex: 1,
+    },
+    settingTitle: {
+      fontSize: 16,
+      fontWeight: "500",
+      color: theme.text,
+      marginLeft: 12,
+    },
+    subSettingTitle: {
+      fontSize: 14,
+      fontWeight: "500",
+      color: theme.textSecondary,
+      marginBottom: 10,
+      marginTop: 15,
+    },
+    toggleButton: {
+      width: 50,
+      height: 30,
+      borderRadius: 15,
+      backgroundColor: theme.border,
+      justifyContent: "center",
+      paddingHorizontal: 2,
+    },
+    toggleButtonActive: {
+      backgroundColor: "#FF9800",
+    },
+    toggleCircle: {
+      width: 26,
+      height: 26,
+      borderRadius: 13,
+      backgroundColor: "#FFFFFF",
+      alignSelf: "flex-start",
+    },
+    toggleCircleActive: {
+      alignSelf: "flex-end",
+    },
+    volumeSection: {
+      marginLeft: 32,
+      marginTop: 10,
+    },
+    volumeSliderContainer: {
+      marginTop: 10,
+    },
+    volumeLabels: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: 10,
+    },
+    volumeLabel: {
+      fontSize: 12,
+      color: theme.textSecondary,
+    },
+    volumeValue: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#FF9800",
+    },
+    volumeControls: {
+      flexDirection: "row",
+      justifyContent: "center",
+      gap: 20,
+      marginTop: 10,
+    },
+    volumeButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.surface,
+      justifyContent: "center",
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: "#FF9800",
+    },
+    vibrationSection: {
+      marginLeft: 32,
+      marginTop: 10,
+    },
+    patternButtons: {
+      flexDirection: "row",
+      gap: 10,
+      marginTop: 10,
+    },
+    patternButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 20,
+      backgroundColor: theme.surface,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    patternButtonActive: {
+      backgroundColor: "#FF9800",
+      borderColor: "#FF9800",
+    },
+    patternButtonText: {
+      fontSize: 14,
+      color: theme.textSecondary,
+      fontWeight: "500",
+    },
+    patternButtonTextActive: {
+      color: "#FFFFFF",
+    },
+  });

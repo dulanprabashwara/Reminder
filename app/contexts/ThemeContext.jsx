@@ -9,6 +9,7 @@ export const lightTheme = {
   textSecondary: "#666666",
   border: "#dddddd",
   primary: "#007AFF",
+  shadow: "#000000",
 };
 
 export const darkTheme = {
@@ -18,6 +19,7 @@ export const darkTheme = {
   textSecondary: "#cccccc",
   border: "#333333",
   primary: "#0A84FF",
+  shadow: "#000000",
 };
 
 export function ThemeProvider({ children }) {

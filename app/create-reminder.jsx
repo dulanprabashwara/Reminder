@@ -23,6 +23,7 @@ if (Platform.OS !== "web") {
 
 export default function CreateReminder() {
   const { theme } = useTheme();
+  const styles = getStyles(theme);
   const router = useRouter();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -135,7 +136,7 @@ export default function CreateReminder() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: "#2C2C2C" }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Custom Orange Header */}
       <View style={styles.orangeHeader}>
         <TouchableOpacity onPress={() => router.push("/(drawer)")}>
@@ -155,7 +156,7 @@ export default function CreateReminder() {
             value={title}
             onChangeText={setTitle}
             placeholder="Enter reminder title"
-            placeholderTextColor="#CCCCCC"
+            placeholderTextColor={theme.textSecondary}
           />
 
           <Text style={styles.label}>Description</Text>
@@ -164,7 +165,7 @@ export default function CreateReminder() {
             value={description}
             onChangeText={setDescription}
             placeholder="Enter reminder description"
-            placeholderTextColor="#CCCCCC"
+            placeholderTextColor={theme.textSecondary}
             multiline
             numberOfLines={4}
           />
@@ -172,7 +173,7 @@ export default function CreateReminder() {
           <Text style={styles.label}>Date</Text>
           {Platform.OS === "web" ? (
             <View style={styles.dateTimeButton}>
-              <Ionicons name="calendar-outline" size={20} color="#FFFFFF" />
+              <Ionicons name="calendar-outline" size={20} color={theme.text} />
               <input
                 type="date"
                 value={getDateInputValue()}
@@ -180,7 +181,7 @@ export default function CreateReminder() {
                 style={{
                   backgroundColor: "transparent",
                   border: "none",
-                  color: "#FFFFFF",
+                  color: theme.text,
                   fontSize: 16,
                   marginLeft: 12,
                   flex: 1,
@@ -215,7 +216,7 @@ export default function CreateReminder() {
           <Text style={styles.label}>Time</Text>
           {Platform.OS === "web" ? (
             <View style={styles.dateTimeButton}>
-              <Ionicons name="time-outline" size={20} color="#FFFFFF" />
+              <Ionicons name="time-outline" size={20} color={theme.text} />
               <input
                 type="time"
                 value={getTimeInputValue()}
@@ -223,7 +224,7 @@ export default function CreateReminder() {
                 style={{
                   backgroundColor: "transparent",
                   border: "none",
-                  color: "#FFFFFF",
+                  color: theme.text,
                   fontSize: 16,
                   marginLeft: 12,
                   flex: 1,
@@ -281,108 +282,109 @@ export default function CreateReminder() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  orangeHeader: {
-    backgroundColor: "#FF9800",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50, // Account for status bar
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 1,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 2,
-    marginTop: -2,
-    opacity: 0.9,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  content: {
-    flex: 1,
-  },
-  form: {
-    padding: 20,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    marginTop: 16,
-    color: "#FFFFFF",
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: "#3C3C3C",
-    color: "#FFFFFF",
-    borderColor: "#555555",
-  },
-  textArea: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    textAlignVertical: "top",
-    minHeight: 100,
-    backgroundColor: "#3C3C3C",
-    color: "#FFFFFF",
-    borderColor: "#555555",
-  },
-  dateTimeButton: {
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    flexDirection: "row",
-    alignItems: "center",
-    minHeight: 50,
-    backgroundColor: "#3C3C3C",
-    borderColor: "#555555",
-  },
-  dateTimeText: {
-    fontSize: 16,
-    marginLeft: 12,
-    flex: 1,
-    color: "#FFFFFF",
-  },
-  saveButton: {
-    marginTop: 30,
-    padding: 15,
-    borderRadius: 8,
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    backgroundColor: "#FF9800",
-  },
-  saveButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-});
+const getStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    orangeHeader: {
+      backgroundColor: "#FF9800",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      paddingTop: 50, // Account for status bar
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 1,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    headerSubtitle: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 2,
+      marginTop: -2,
+      opacity: 0.9,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    content: {
+      flex: 1,
+    },
+    form: {
+      padding: 20,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: "600",
+      marginBottom: 8,
+      marginTop: 16,
+      color: theme.text,
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      backgroundColor: theme.surface,
+      color: theme.text,
+      borderColor: theme.border,
+    },
+    textArea: {
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      fontSize: 16,
+      textAlignVertical: "top",
+      minHeight: 100,
+      backgroundColor: theme.surface,
+      color: theme.text,
+      borderColor: theme.border,
+    },
+    dateTimeButton: {
+      borderWidth: 1,
+      borderRadius: 8,
+      padding: 12,
+      flexDirection: "row",
+      alignItems: "center",
+      minHeight: 50,
+      backgroundColor: theme.surface,
+      borderColor: theme.border,
+    },
+    dateTimeText: {
+      fontSize: 16,
+      marginLeft: 12,
+      flex: 1,
+      color: theme.text,
+    },
+    saveButton: {
+      marginTop: 30,
+      padding: 15,
+      borderRadius: 8,
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center",
+      backgroundColor: "#FF9800",
+    },
+    saveButtonText: {
+      color: "white",
+      fontSize: 18,
+      fontWeight: "600",
+      marginLeft: 8,
+    },
+  });

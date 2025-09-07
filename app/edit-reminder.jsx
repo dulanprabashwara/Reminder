@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useTheme } from "./contexts/ThemeContext";
 import notificationService from "./services/notificationService";
 import { updateReminder, updateReminderNotificationId } from "./utils/storage";
 
@@ -21,6 +22,8 @@ if (Platform.OS !== "web") {
 }
 
 export default function EditReminder() {
+  const { theme } = useTheme();
+  const styles = getStyles(theme);
   const router = useRouter();
   const params = useLocalSearchParams();
 
@@ -154,7 +157,7 @@ export default function EditReminder() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: "#2C2C2C" }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {/* Custom Orange Header */}
       <View style={styles.orangeHeader}>
         <TouchableOpacity onPress={() => router.push("/(drawer)")}>
@@ -316,104 +319,105 @@ export default function EditReminder() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  orangeHeader: {
-    backgroundColor: "#FF9800",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    paddingTop: 50, // Account for status bar
-  },
-  titleContainer: {
-    flex: 1,
-    alignItems: "center",
-    marginHorizontal: 16,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 1,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  headerSubtitle: {
-    fontSize: 16,
-    fontWeight: "400",
-    color: "white",
-    textAlign: "center",
-    letterSpacing: 2,
-    marginTop: -2,
-    opacity: 0.9,
-    textShadowColor: "rgba(0, 0, 0, 0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  content: {
-    flex: 1,
-  },
-  formContainer: {
-    padding: 20,
-  },
-  inputGroup: {
-    marginBottom: 24,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    marginBottom: 8,
-    color: "#FFFFFF",
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    fontSize: 16,
-    fontFamily: "System",
-    backgroundColor: "#3C3C3C",
-    color: "#FFFFFF",
-    borderColor: "#555555",
-    minHeight: 50,
-  },
-  descriptionInput: {
-    height: 100,
-    textAlignVertical: "top",
-  },
-  dateTimeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderRadius: 12,
-    padding: 16,
-    gap: 12,
-    backgroundColor: "#3C3C3C",
-    borderColor: "#555555",
-  },
-  dateTimeText: {
-    fontSize: 16,
-    flex: 1,
-    color: "#FFFFFF",
-  },
-  updateButton: {
-    borderRadius: 12,
-    padding: 16,
-    backgroundColor: "#FF9800",
-    alignItems: "center",
-    flexDirection: "row",
-    justifyContent: "center",
-    marginTop: 20,
-  },
-  updateButtonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "600",
-    marginLeft: 8,
-  },
-});
+const getStyles = (theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    orangeHeader: {
+      backgroundColor: "#FF9800",
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      paddingTop: 50, // Account for status bar
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+      marginHorizontal: 16,
+    },
+    headerTitle: {
+      fontSize: 24,
+      fontWeight: "700",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 1,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    headerSubtitle: {
+      fontSize: 16,
+      fontWeight: "400",
+      color: "white",
+      textAlign: "center",
+      letterSpacing: 2,
+      marginTop: -2,
+      opacity: 0.9,
+      textShadowColor: "rgba(0, 0, 0, 0.3)",
+      textShadowOffset: { width: 1, height: 1 },
+      textShadowRadius: 2,
+    },
+    content: {
+      flex: 1,
+    },
+    formContainer: {
+      padding: 20,
+    },
+    inputGroup: {
+      marginBottom: 24,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: "600",
+      marginBottom: 8,
+      color: "#FFFFFF",
+    },
+    input: {
+      borderWidth: 1,
+      borderRadius: 12,
+      padding: 16,
+      fontSize: 16,
+      fontFamily: "System",
+      backgroundColor: "#3C3C3C",
+      color: "#FFFFFF",
+      borderColor: "#555555",
+      minHeight: 50,
+    },
+    descriptionInput: {
+      height: 100,
+      textAlignVertical: "top",
+    },
+    dateTimeButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderWidth: 1,
+      borderRadius: 12,
+      padding: 16,
+      gap: 12,
+      backgroundColor: "#3C3C3C",
+      borderColor: "#555555",
+    },
+    dateTimeText: {
+      fontSize: 16,
+      flex: 1,
+      color: "#FFFFFF",
+    },
+    updateButton: {
+      borderRadius: 12,
+      padding: 16,
+      backgroundColor: "#FF9800",
+      alignItems: "center",
+      flexDirection: "row",
+      justifyContent: "center",
+      marginTop: 20,
+    },
+    updateButtonText: {
+      color: "white",
+      fontSize: 18,
+      fontWeight: "600",
+      marginLeft: 8,
+    },
+  });
