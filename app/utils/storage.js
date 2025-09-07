@@ -74,13 +74,23 @@ export const saveReminder = async (reminderData) => {
 // Update an existing reminder
 export const updateReminder = async (id, updates) => {
   try {
+    console.log("UpdateReminder called with:", { id, updates });
     const reminders = await getReminders();
+    console.log("Current reminders before update:", reminders);
+
     const updatedReminders = reminders.map((reminder) =>
       reminder.id === id ? { ...reminder, ...updates } : reminder
     );
 
+    console.log("Updated reminders array:", updatedReminders);
     await storage.setItem(REMINDERS_KEY, JSON.stringify(updatedReminders));
-    return updatedReminders.find((reminder) => reminder.id === id);
+
+    const updatedReminder = updatedReminders.find(
+      (reminder) => reminder.id === id
+    );
+    console.log("Final updated reminder:", updatedReminder);
+
+    return updatedReminder;
   } catch (error) {
     console.error("Error updating reminder:", error);
     throw error;

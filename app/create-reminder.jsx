@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import Header from "./components/Header";
 import { useTheme } from "./contexts/ThemeContext";
 import notificationService from "./services/notificationService";
 import { saveReminder, updateReminderNotificationId } from "./utils/storage";
@@ -73,12 +72,12 @@ export default function CreateReminder() {
         {
           text: "OK",
           onPress: () => {
-            // Clear form and navigate back
+            // Clear form and navigate to home screen
             setTitle("");
             setDescription("");
             setDate(new Date());
             setTime(new Date());
-            router.back();
+            router.push("/(drawer)");
           },
         },
       ]);
@@ -136,56 +135,44 @@ export default function CreateReminder() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header title="Create Reminder" showMenu={false} />
+    <View style={[styles.container, { backgroundColor: "#2C2C2C" }]}>
+      {/* Custom Orange Header */}
+      <View style={styles.orangeHeader}>
+        <TouchableOpacity onPress={() => router.push("/(drawer)")}>
+          <Ionicons name="arrow-back" size={24} color="white" />
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Text style={styles.headerTitle}>Create</Text>
+          <Text style={styles.headerSubtitle}>Reminder</Text>
+        </View>
+        <View style={{ width: 24 }} />
+      </View>
       <ScrollView style={styles.content}>
         <View style={styles.form}>
-          <Text style={[styles.label, { color: theme.text }]}>Title *</Text>
+          <Text style={styles.label}>Title *</Text>
           <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                color: theme.text,
-                borderColor: theme.border,
-              },
-            ]}
+            style={styles.input}
             value={title}
             onChangeText={setTitle}
             placeholder="Enter reminder title"
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor="#CCCCCC"
           />
 
-          <Text style={[styles.label, { color: theme.text }]}>Description</Text>
+          <Text style={styles.label}>Description</Text>
           <TextInput
-            style={[
-              styles.textArea,
-              {
-                backgroundColor: theme.surface,
-                color: theme.text,
-                borderColor: theme.border,
-              },
-            ]}
+            style={styles.textArea}
             value={description}
             onChangeText={setDescription}
             placeholder="Enter reminder description"
-            placeholderTextColor={theme.textSecondary}
+            placeholderTextColor="#CCCCCC"
             multiline
             numberOfLines={4}
           />
 
-          <Text style={[styles.label, { color: theme.text }]}>Date</Text>
+          <Text style={styles.label}>Date</Text>
           {Platform.OS === "web" ? (
-            <View
-              style={[
-                styles.dateTimeButton,
-                {
-                  backgroundColor: theme.surface,
-                  borderColor: theme.border,
-                },
-              ]}
-            >
-              <Ionicons name="calendar-outline" size={20} color={theme.text} />
+            <View style={styles.dateTimeButton}>
+              <Ionicons name="calendar-outline" size={20} color="#FFFFFF" />
               <input
                 type="date"
                 value={getDateInputValue()}
@@ -193,7 +180,7 @@ export default function CreateReminder() {
                 style={{
                   backgroundColor: "transparent",
                   border: "none",
-                  color: theme.text,
+                  color: "#FFFFFF",
                   fontSize: 16,
                   marginLeft: 12,
                   flex: 1,
@@ -204,26 +191,14 @@ export default function CreateReminder() {
           ) : (
             <>
               <TouchableOpacity
-                style={[
-                  styles.dateTimeButton,
-                  {
-                    backgroundColor: theme.surface,
-                    borderColor: theme.border,
-                  },
-                ]}
+                style={styles.dateTimeButton}
                 onPress={() => {
                   console.log("Date picker button pressed");
                   setShowDatePicker(true);
                 }}
               >
-                <Ionicons
-                  name="calendar-outline"
-                  size={20}
-                  color={theme.text}
-                />
-                <Text style={[styles.dateTimeText, { color: theme.text }]}>
-                  {formatDate(date)}
-                </Text>
+                <Ionicons name="calendar-outline" size={20} color="#FFFFFF" />
+                <Text style={styles.dateTimeText}>{formatDate(date)}</Text>
               </TouchableOpacity>
 
               {showDatePicker && DateTimePicker && (
@@ -237,18 +212,10 @@ export default function CreateReminder() {
             </>
           )}
 
-          <Text style={[styles.label, { color: theme.text }]}>Time</Text>
+          <Text style={styles.label}>Time</Text>
           {Platform.OS === "web" ? (
-            <View
-              style={[
-                styles.dateTimeButton,
-                {
-                  backgroundColor: theme.surface,
-                  borderColor: theme.border,
-                },
-              ]}
-            >
-              <Ionicons name="time-outline" size={20} color={theme.text} />
+            <View style={styles.dateTimeButton}>
+              <Ionicons name="time-outline" size={20} color="#FFFFFF" />
               <input
                 type="time"
                 value={getTimeInputValue()}
@@ -256,7 +223,7 @@ export default function CreateReminder() {
                 style={{
                   backgroundColor: "transparent",
                   border: "none",
-                  color: theme.text,
+                  color: "#FFFFFF",
                   fontSize: 16,
                   marginLeft: 12,
                   flex: 1,
@@ -267,22 +234,14 @@ export default function CreateReminder() {
           ) : (
             <>
               <TouchableOpacity
-                style={[
-                  styles.dateTimeButton,
-                  {
-                    backgroundColor: theme.surface,
-                    borderColor: theme.border,
-                  },
-                ]}
+                style={styles.dateTimeButton}
                 onPress={() => {
                   console.log("Time picker button pressed");
                   setShowTimePicker(true);
                 }}
               >
-                <Ionicons name="time-outline" size={20} color={theme.text} />
-                <Text style={[styles.dateTimeText, { color: theme.text }]}>
-                  {formatTime(time)}
-                </Text>
+                <Ionicons name="time-outline" size={20} color="#FFFFFF" />
+                <Text style={styles.dateTimeText}>{formatTime(time)}</Text>
               </TouchableOpacity>
 
               {showTimePicker && DateTimePicker && (
@@ -301,7 +260,6 @@ export default function CreateReminder() {
             style={[
               styles.saveButton,
               {
-                backgroundColor: saving ? theme.border : theme.primary,
                 opacity: saving ? 0.7 : 1,
               },
             ]}
@@ -327,6 +285,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  orangeHeader: {
+    backgroundColor: "#FF9800",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingTop: 50, // Account for status bar
+  },
+  titleContainer: {
+    flex: 1,
+    alignItems: "center",
+    marginHorizontal: 16,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "white",
+    textAlign: "center",
+    letterSpacing: 1,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "white",
+    textAlign: "center",
+    letterSpacing: 2,
+    marginTop: -2,
+    opacity: 0.9,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
   content: {
     flex: 1,
   },
@@ -338,12 +332,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     marginBottom: 8,
     marginTop: 16,
+    color: "#FFFFFF",
   },
   input: {
     borderWidth: 1,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    backgroundColor: "#3C3C3C",
+    color: "#FFFFFF",
+    borderColor: "#555555",
   },
   textArea: {
     borderWidth: 1,
@@ -352,6 +350,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlignVertical: "top",
     minHeight: 100,
+    backgroundColor: "#3C3C3C",
+    color: "#FFFFFF",
+    borderColor: "#555555",
   },
   dateTimeButton: {
     borderWidth: 1,
@@ -360,11 +361,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     minHeight: 50,
+    backgroundColor: "#3C3C3C",
+    borderColor: "#555555",
   },
   dateTimeText: {
     fontSize: 16,
     marginLeft: 12,
     flex: 1,
+    color: "#FFFFFF",
   },
   saveButton: {
     marginTop: 30,
@@ -373,10 +377,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+    backgroundColor: "#FF9800",
   },
   saveButtonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: "600",
     marginLeft: 8,
   },

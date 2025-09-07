@@ -31,41 +31,24 @@ export default function EditReminder() {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [initialLoadDone, setInitialLoadDone] = useState(false);
 
   useEffect(() => {
-    // Only load initial data once
-    if (!initialLoadDone) {
-      console.log("Edit reminder params:", params);
-      // Load existing reminder data from params
-      if (params.title) {
-        console.log("Setting title to:", params.title);
-        setTitle(params.title);
-      }
-      if (params.description) {
-        console.log("Setting description to:", params.description);
-        setDescription(params.description);
-      }
+    // Load existing reminder data from params
+    if (params.title) setTitle(params.title);
+    if (params.description) setDescription(params.description);
 
-      if (params.date && params.time) {
-        const reminderDate = new Date(params.date);
-        setDate(reminderDate);
+    if (params.date && params.time) {
+      const reminderDate = new Date(params.date);
+      setDate(reminderDate);
 
-        const [hours, minutes] = params.time.split(":");
-        const reminderTime = new Date();
-        reminderTime.setHours(parseInt(hours), parseInt(minutes));
-        setTime(reminderTime);
-      }
-
-      setInitialLoadDone(true);
+      const [hours, minutes] = params.time.split(":");
+      const reminderTime = new Date();
+      reminderTime.setHours(parseInt(hours), parseInt(minutes));
+      setTime(reminderTime);
     }
-  }, [params, initialLoadDone]);
+  }, [params]);
 
   const handleUpdate = async () => {
-    console.log("=== UPDATE BUTTON PRESSED ===");
-    console.log("Handle update called with title:", title);
-    console.log("Handle update called with description:", description);
-
     if (!title.trim()) {
       Alert.alert("Error", "Please enter a reminder title");
       return;
@@ -88,14 +71,8 @@ export default function EditReminder() {
         ).toISOString(),
       };
 
-      console.log("Updating reminder with data:", reminderData);
-
       // Update the reminder
-      const updatedReminder = await updateReminder(
-        reminderData.id,
-        reminderData
-      );
-      console.log("Update result:", updatedReminder);
+      await updateReminder(reminderData.id, reminderData);
 
       // Cancel existing notification if it exists
       if (params.notificationId) {
@@ -115,18 +92,7 @@ export default function EditReminder() {
       Alert.alert("Success", "Reminder updated successfully!", [
         {
           text: "OK",
-          onPress: async () => {
-            // Ensure storage operation is complete
-            try {
-              // Small delay to ensure all async operations complete
-              await new Promise((resolve) => setTimeout(resolve, 200));
-              // Use replace to ensure fresh data load
-              router.replace("/(drawer)");
-            } catch (error) {
-              console.error("Navigation error:", error);
-              router.push("/(drawer)");
-            }
-          },
+          onPress: () => router.push("/(drawer)"),
         },
       ]);
     } catch (error) {
@@ -175,9 +141,10 @@ export default function EditReminder() {
             <TextInput
               style={styles.input}
               value={title}
-              onChangeText={setTitle}
-              onFocus={() => console.log("Title input focused")}
-              onBlur={() => console.log("Title input blurred")}
+              onChangeText={(text) => {
+                console.log("Title changed to:", text);
+                setTitle(text);
+              }}
               placeholder="Enter reminder title"
               placeholderTextColor="#CCCCCC"
               maxLength={100}
@@ -192,9 +159,10 @@ export default function EditReminder() {
             <TextInput
               style={[styles.input, styles.descriptionInput]}
               value={description}
-              onChangeText={setDescription}
-              onFocus={() => console.log("Description input focused")}
-              onBlur={() => console.log("Description input blurred")}
+              onChangeText={(text) => {
+                console.log("Description changed to:", text);
+                setDescription(text);
+              }}
               placeholder="Enter description"
               placeholderTextColor="#CCCCCC"
               multiline

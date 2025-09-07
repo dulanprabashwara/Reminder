@@ -1,12 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useTheme } from "../contexts/ThemeContext";
 
 function CustomDrawerContent(props) {
-  const { theme, isDark, toggleTheme } = useTheme();
   const router = useRouter();
 
   const navigateToScreen = (screenName) => {
@@ -15,23 +13,15 @@ function CustomDrawerContent(props) {
   };
 
   return (
-    <View style={[styles.drawerContent, { backgroundColor: theme.surface }]}>
-      {/* Theme Toggle in Top Right Corner */}
-      <View style={styles.themeToggleContainer}>
-        <View style={[styles.themeToggleCorner]}>
-          <Ionicons
-            name={isDark ? "moon" : "sunny"}
-            size={20}
-            color={theme.text}
-            style={styles.themeIcon}
-          />
-          <Switch
-            value={isDark}
-            onValueChange={toggleTheme}
-            trackColor={{ false: "#767577", true: "#81b0ff" }}
-            thumbColor={isDark ? "#f5dd4b" : "#f4f3f4"}
-            style={styles.themeSwitch}
-          />
+    <View style={[styles.drawerContent, { backgroundColor: "#2C2C2C" }]}>
+      {/* Orange Header */}
+      <View style={styles.drawerHeader}>
+        <View style={styles.headerContent}>
+          <Ionicons name="alarm" size={40} color="white" />
+          <View style={styles.appNameContainer}>
+            <Text style={styles.appTitle}>Daily</Text>
+            <Text style={styles.appSubtitle}>Reminder</Text>
+          </View>
         </View>
       </View>
 
@@ -42,10 +32,8 @@ function CustomDrawerContent(props) {
           style={styles.drawerItem}
           onPress={() => navigateToScreen("/create-reminder")}
         >
-          <Ionicons name="add-circle-outline" size={24} color={theme.text} />
-          <Text style={[styles.drawerItemText, { color: theme.text }]}>
-            Create Reminder
-          </Text>
+          <Ionicons name="add-circle-outline" size={24} color="#FFFFFF" />
+          <Text style={styles.drawerItemText}>Create Reminder</Text>
         </TouchableOpacity>
 
         {/* Privacy Policy Button */}
@@ -53,14 +41,8 @@ function CustomDrawerContent(props) {
           style={styles.drawerItem}
           onPress={() => navigateToScreen("/privacy-policy")}
         >
-          <Ionicons
-            name="shield-checkmark-outline"
-            size={24}
-            color={theme.text}
-          />
-          <Text style={[styles.drawerItemText, { color: theme.text }]}>
-            Privacy Policy
-          </Text>
+          <Ionicons name="shield-checkmark-outline" size={24} color="#FFFFFF" />
+          <Text style={styles.drawerItemText}>Privacy Policy</Text>
         </TouchableOpacity>
 
         {/* About Us Button */}
@@ -71,11 +53,18 @@ function CustomDrawerContent(props) {
           <Ionicons
             name="information-circle-outline"
             size={24}
-            color={theme.text}
+            color="#FFFFFF"
           />
-          <Text style={[styles.drawerItemText, { color: theme.text }]}>
-            About Us
-          </Text>
+          <Text style={styles.drawerItemText}>About Us</Text>
+        </TouchableOpacity>
+
+        {/* Settings Button */}
+        <TouchableOpacity
+          style={styles.drawerItem}
+          onPress={() => navigateToScreen("/profile")}
+        >
+          <Ionicons name="settings-outline" size={24} color="#FFFFFF" />
+          <Text style={styles.drawerItemText}>Settings</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -114,38 +103,57 @@ const styles = StyleSheet.create({
   drawerContent: {
     flex: 1,
   },
-  themeToggleContainer: {
+  drawerHeader: {
+    backgroundColor: "#FF9800",
     paddingTop: 50,
-    paddingRight: 20,
-    alignItems: "flex-end",
+    paddingBottom: 20,
+    paddingHorizontal: 20,
   },
-  themeToggleCorner: {
+  headerContent: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 8,
   },
-  themeIcon: {
-    marginRight: 5,
+  appNameContainer: {
+    marginLeft: 16,
   },
-  themeSwitch: {
-    transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }],
+  appTitle: {
+    fontSize: 24,
+    fontWeight: "700",
+    color: "white",
+    letterSpacing: 1,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+  },
+  appSubtitle: {
+    fontSize: 16,
+    fontWeight: "400",
+    color: "white",
+    letterSpacing: 2,
+    marginTop: -2,
+    opacity: 0.9,
+    textShadowColor: "rgba(0, 0, 0, 0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   drawerItems: {
     flex: 1,
     padding: 20,
-    paddingTop: 10,
+    paddingTop: 30,
   },
   drawerItem: {
     flexDirection: "row",
     alignItems: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 10,
-    borderRadius: 8,
-    marginVertical: 5,
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    marginVertical: 6,
+    backgroundColor: "#3C3C3C",
   },
   drawerItemText: {
     fontSize: 16,
-    marginLeft: 15,
+    marginLeft: 16,
     fontWeight: "500",
+    color: "#FFFFFF",
   },
 });
